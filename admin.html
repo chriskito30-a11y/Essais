@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17151f">
+  <title>Administration · Fais Ton Show</title>
+  <style>
+    :root { --ink:#17151f; --yellow:#ffd12f; --paper:#fbf7ef; --line:#ded8ce; --red:#b92f24; --green:#237344; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f3efe8; color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    .topbar { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px max(18px,calc((100vw - 980px)/2)); background:var(--ink); color:white; box-shadow:0 4px 18px rgba(0,0,0,.18); }
+    .brand { font-size:.8rem; font-weight:900; letter-spacing:.12em; }
+    .topbar a { color:var(--yellow); font-size:.8rem; font-weight:800; text-decoration:none; }
+    main { width:min(100% - 28px,980px); margin:28px auto 70px; }
+    h1 { margin:0 0 8px; font-size:clamp(2rem,7vw,3.5rem); letter-spacing:-.05em; }
+    .lead { margin:0 0 26px; color:#6c665f; line-height:1.5; }
+    .panel { padding:22px; border:1px solid var(--line); border-radius:22px; background:white; box-shadow:0 10px 30px rgba(40,30,15,.05); }
+    .panel + .panel { margin-top:18px; }
+    .panel h2 { margin:0 0 16px; font-size:1.25rem; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .field { display:grid; gap:6px; }
+    .field.wide { grid-column:1/-1; }
+    label { color:#5f5952; font-size:.76rem; font-weight:800; }
+    input,select { width:100%; min-height:44px; padding:10px 12px; border:1px solid #cbc4b9; border-radius:11px; background:white; color:var(--ink); outline:none; }
+    input:focus,select:focus { border-color:#8a6d00; box-shadow:0 0 0 3px rgba(255,209,47,.25); }
+    .hint { margin:12px 0 0; color:#79726a; font-size:.75rem; line-height:1.45; }
+    .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:16px; }
+    .btn { min-height:42px; padding:9px 15px; border:0; border-radius:11px; background:var(--ink); color:white; font-weight:800; }
+    .btn.primary { background:var(--yellow); color:var(--ink); }
+    .btn.light { border:1px solid var(--line); background:#f8f5ef; color:var(--ink); }
+    .btn.danger { border:1px solid #f0c9c5; background:#fff1f0; color:var(--red); }
+    .btn.small { min-height:34px; padding:6px 10px; font-size:.78rem; }
+    .btn:disabled { cursor:not-allowed; opacity:.45; }
+    .status { display:none; margin-top:14px; padding:11px 13px; border-radius:11px; font-size:.82rem; font-weight:700; line-height:1.4; }
+    .status.show { display:block; }
+    .status.info { background:#eef3ff; color:#254e95; }
+    .status.ok { background:#e9f7ee; color:var(--green); }
+    .status.error { background:#fff0ef; color:var(--red); }
+    #editor[hidden],#login[hidden] { display:none; }
+    .category { margin-top:14px; padding:16px; border:1px solid var(--line); border-radius:17px; background:#fbf9f5; }
+    .category-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+    .category-head strong { font-size:1rem; }
+    .mini-actions { display:flex; gap:6px; }
+    .course { margin-top:10px; padding:13px; border:1px solid #e5dfd6; border-radius:13px; background:white; }
+    .course-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; color:#716a62; font-size:.72rem; font-weight:900; text-transform:uppercase; }
+    .sticky-save { position:fixed; right:18px; bottom:18px; z-index:9; display:none; box-shadow:0 8px 30px rgba(0,0,0,.25); }
+    .sticky-save.show { display:block; }
+    .security { display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding:12px; border-radius:12px; background:#fff9db; color:#655100; font-size:.78rem; line-height:1.45; }
+    @media (max-width:650px) { .grid{grid-template-columns:1fr}.field.wide{grid-column:auto}.panel{padding:17px}.category{padding:13px}.course .grid{gap:9px}.topbar{padding-inline:16px} }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">★ FAIS TON SHOW · ADMIN</span>
+    <a href="./index.html">Voir la page ↗</a>
+  </header>
+
+  <main>
+    <h1>Gérer les cours d’essai</h1>
+    <p class="lead">Ajoute, modifie ou supprime les disciplines et leurs liens. L’enregistrement met directement à jour le fichier <strong>data.json</strong> de ton dépôt.</p>
+
+    <section class="panel" id="login">
+      <h2>Connexion sécurisée avec GitHub</h2>
+      <div class="grid">
+        <div class="field wide">
+          <label for="token">Jeton GitHub personnel</label>
+          <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
+        </div>
+        <div class="field">
+          <label for="owner">Compte GitHub</label>
+          <input id="owner" autocomplete="username" placeholder="Ex. christophe-gros">
+        </div>
+        <div class="field">
+          <label for="repo">Nom du dépôt</label>
+          <input id="repo" placeholder="Ex. cours-essai-fts">
+        </div>
+        <div class="field">
+          <label for="branch">Branche</label>
+          <input id="branch" value="main">
+        </div>
+        <div class="field">
+          <label for="data-path">Fichier à modifier</label>
+          <input id="data-path" value="data.json">
+        </div>
+      </div>
+      <div class="security"><span aria-hidden="true">🔒</span><span>Le jeton reste uniquement dans la mémoire de cette page et disparaît dès que tu la fermes. Il n’est jamais enregistré dans le site.</span></div>
+      <div class="actions"><button class="btn primary" id="connect">Se connecter et charger</button></div>
+      <div class="status" id="login-status" role="status"></div>
+    </section>
+
+    <div id="editor" hidden>
+      <section class="panel">
+        <h2>Textes de la page</h2>
+        <div class="grid" id="page-fields"></div>
+      </section>
+
+      <section class="panel">
+        <div class="category-head">
+          <h2 style="margin:0">Disciplines et créneaux</h2>
+          <button class="btn primary small" id="add-category">+ Ajouter une discipline</button>
+        </div>
+        <div id="categories"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Enregistrer les changements</h2>
+        <p class="hint">Après l’enregistrement, GitHub Pages peut mettre une à deux minutes à afficher la nouvelle version.</p>
+        <div class="actions">
+          <button class="btn primary" id="save">Enregistrer sur GitHub</button>
+          <button class="btn light" id="reload">Annuler et recharger</button>
+          <button class="btn danger" id="logout">Se déconnecter</button>
+        </div>
+        <div class="status" id="save-status" role="status"></div>
+      </section>
+    </div>
+  </main>
+
+  <button class="btn primary sticky-save" id="floating-save">Enregistrer</button>
+
+  <script>
+    "use strict";
+
+    const $ = (selector) => document.querySelector(selector);
+    let token = "";
+    let settings = {};
+    let currentSha = "";
+    let data = null;
+    let dirty = false;
+
+    const colors = [
+      ["coral", "Corail"], ["violet", "Violet"], ["pink", "Rose"],
+      ["blue", "Bleu"], ["green", "Vert"], ["yellow", "Jaune"]
+    ];
+
+    function showStatus(element, message, type = "info") {
+      element.textContent = message;
+      element.className = `status show ${type}`;
+    }
+
+    function clearStatus(element) {
+      element.textContent = "";
+      element.className = "status";
+    }
+
+    function detectRepository() {
+      const host = location.hostname.toLowerCase();
+      if (!host.endsWith(".github.io")) return;
+      const owner = host.split(".")[0];
+      const firstPath = location.pathname.split("/").filter(Boolean)[0];
+      $("#owner").value = owner;
+      $("#repo").value = firstPath && !firstPath.endsWith(".html") ? firstPath : `${owner}.github.io`;
+    }
+
+    function loadSavedSettings() {
+      detectRepository();
+      try {
+        const saved = JSON.parse(localStorage.getItem("fts-github-settings") || "null");
+        if (!saved) return;
+        $("#owner").value = saved.owner || $("#owner").value;
+        $("#repo").value = saved.repo || $("#repo").value;
+        $("#branch").value = saved.branch || "main";
+        $("#data-path").value = saved.path || "data.json";
+      } catch (_) {}
+    }
+
+    function apiUrl() {
+      const encodedPath = settings.path.split("/").map(encodeURIComponent).join("/");
+      return `https://api.github.com/repos/${encodeURIComponent(settings.owner)}/${encodeURIComponent(settings.repo)}/contents/${encodedPath}`;
+    }
+
+    async function githubRequest(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(options.headers || {})
+        }
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("Jeton refusé. Vérifie qu’il est correct et qu’il n’est pas expiré.");
+        if (response.status === 403) throw new Error("Ce jeton n’a pas le droit de modifier ce dépôt. Autorise “Contents: Read and write”.");
+        if (response.status === 404) throw new Error("Dépôt ou fichier data.json introuvable. Vérifie le compte, le dépôt, la branche et le chemin.");
+        throw new Error(body.message || `Erreur GitHub ${response.status}`);
+      }
+      return body;
+    }
+
+    function decodeBase64(value) {
+      const binary = atob(value.replace(/\n/g, ""));
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function encodeBase64(value) {
+      const bytes = new TextEncoder().encode(value);
+      let binary = "";
+      for (let index = 0; index < bytes.length; index += 8192) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
+      }
+      return btoa(binary);
+    }
+
+    async function connect() {
+      clearStatus($("#login-status"));
+      token = $("#token").value.trim();
+      settings = {
+        owner: $("#owner").value.trim(),
+        repo: $("#repo").value.trim(),
+        branch: $("#branch").value.trim() || "main",
+        path: $("#data-path").value.trim() || "data.json"
+      };
+      if (!token || !settings.owner || !settings.repo) {
+        showStatus($("#login-status"), "Renseigne le jeton, le compte GitHub et le dépôt.", "error");
+        return;
+      }
+
+      $("#connect").disabled = true;
+      showStatus($("#login-status"), "Connexion et chargement des données…");
+      try {
+        localStorage.setItem("fts-github-settings", JSON.stringify(settings));
+        await loadData();
+        $("#login").hidden = true;
+        $("#editor").hidden = false;
+        $("#floating-save").classList.add("show");
+      } catch (error) {
+        token = "";
+        showStatus($("#login-status"), error.message, "error");
+      } finally {
+        $("#connect").disabled = false;
+      }
+    }
+
+    async function loadData() {
+      const file = await githubRequest(`${apiUrl()}?ref=${encodeURIComponent(settings.branch)}`);
+      if (file.type !== "file" || !file.content) throw new Error("Le chemin indiqué ne correspond pas à un fichier.");
+      data = JSON.parse(decodeBase64(file.content));
+      currentSha = file.sha;
+      dirty = false;
+      renderEditor();
+    }
+
+    function makeField(label, value, onInput, options = {}) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `field${options.wide ? " wide" : ""}`;
+      const labelElement = document.createElement("label");
+      labelElement.textContent = label;
+      const input = document.createElement("input");
+      input.value = value || "";
+      input.type = options.type || "text";
+      input.placeholder = options.placeholder || "";
+      input.addEventListener("input", () => { onInput(input.value); markDirty(); });
+      wrapper.append(labelElement, input);
+      return wrapper;
+    }
+
+    function makeButton(label, className, onClick) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = className;
+      button.textContent = label;
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    function markDirty() {
+      dirty = true;
+      $("#floating-save").textContent = "Enregistrer •";
+    }
+
+    function renderEditor() {
+      const fields = $("#page-fields");
+      fields.replaceChildren(
+        makeField("Nom affiché", data.brand, (value) => data.brand = value),
+        makeField("Petit texte au-dessus", data.eyebrow, (value) => data.eyebrow = value),
+        makeField("Titre", data.title, (value) => data.title = value),
+        makeField("Titre en jaune", data.titleHighlight, (value) => data.titleHighlight = value),
+        makeField("Phrase d’introduction", data.intro, (value) => data.intro = value, { wide:true }),
+        makeField("Phrase du bas", data.footer, (value) => data.footer = value, { wide:true })
+      );
+      renderCategories();
+      $("#floating-save").textContent = "Enregistrer";
+      clearStatus($("#save-status"));
+    }
+
+    function renderCategories() {
+      const container = $("#categories");
+      container.replaceChildren();
+
+      data.categories.forEach((category, categoryIndex) => {
+        const card = document.createElement("article");
+        card.className = "category";
+
+        const head = document.createElement("div");
+        head.className = "category-head";
+        const heading = document.createElement("strong");
+        heading.textContent = `${category.icon || "★"} ${category.name || "Nouvelle discipline"}`;
+        const headActions = document.createElement("div");
+        headActions.className = "mini-actions";
+        headActions.append(
+          makeButton("↑", "btn light small", () => move(data.categories, categoryIndex, -1)),
+          makeButton("↓", "btn light small", () => move(data.categories, categoryIndex, 1)),
+          makeButton("Supprimer", "btn danger small", () => {
+            if (!confirm(`Supprimer la discipline “${category.name}” et tous ses créneaux ?`)) return;
+            data.categories.splice(categoryIndex, 1); markDirty(); renderCategories();
+          })
+        );
+        head.append(heading, headActions);
+
+        const categoryFields = document.createElement("div");
+        categoryFields.className = "grid";
+        categoryFields.append(
+          makeField("Nom de la discipline", category.name, (value) => { category.name = value; heading.textContent = `${category.icon || "★"} ${value}`; }),
+          makeField("Emoji", category.icon, (value) => { category.icon = value; heading.textContent = `${value || "★"} ${category.name}`; })
+        );
+
+        const colorField = document.createElement("div");
+        colorField.className = "field wide";
+        const colorLabel = document.createElement("label");
+        colorLabel.textContent = "Couleur";
+        const select = document.createElement("select");
+        colors.forEach(([value, label]) => {
+          const option = document.createElement("option");
+          option.value = value; option.textContent = label; option.selected = category.color === value;
+          select.append(option);
+        });
+        select.addEventListener("change", () => { category.color = select.value; markDirty(); });
+        colorField.append(colorLabel, select);
+        categoryFields.append(colorField);
+
+        const courseContainer = document.createElement("div");
+        category.courses.forEach((course, courseIndex) => {
+          const courseCard = document.createElement("div");
+          courseCard.className = "course";
+          const title = document.createElement("div");
+          title.className = "course-title";
+          title.append(document.createTextNode(`Créneau ${courseIndex + 1}`));
+          const buttons = document.createElement("div");
+          buttons.className = "mini-actions";
+          buttons.append(
+            makeButton("↑", "btn light small", () => move(category.courses, courseIndex, -1)),
+            makeButton("↓", "btn light small", () => move(category.courses, courseIndex, 1)),
+            makeButton("Supprimer", "btn danger small", () => {
+              if (!confirm(`Supprimer le créneau “${course.name}” ?`)) return;
+              category.courses.splice(courseIndex, 1); markDirty(); renderCategories();
+            })
+          );
+          title.append(buttons);
+          const grid = document.createElement("div");
+          grid.className = "grid";
+          grid.append(
+            makeField("Nom / âge", course.name, (value) => course.name = value),
+            makeField("Jour et horaire", course.detail, (value) => course.detail = value),
+            makeField("Lien HelloAsso", course.url, (value) => course.url = value, { wide:true, type:"url", placeholder:"https://www.helloasso.com/…" })
+          );
+          courseCard.append(title, grid);
+          courseContainer.append(courseCard);
+        });
+
+        const addCourse = makeButton("+ Ajouter un créneau", "btn light small", () => {
+          category.courses.push({ name:"Nouveau créneau", detail:"Jour · heure–heure", url:"https://www.helloasso.com/" });
+          markDirty(); renderCategories();
+        });
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        actions.append(addCourse);
+        card.append(head, categoryFields, courseContainer, actions);
+        container.append(card);
+      });
+    }
+
+    function move(array, index, direction) {
+      const destination = index + direction;
+      if (destination < 0 || destination >= array.length) return;
+      [array[index], array[destination]] = [array[destination], array[index]];
+      markDirty(); renderCategories();
+    }
+
+    function cleanTrackingLinks() {
+      data.categories.forEach((category) => category.courses.forEach((course) => {
+        course.url = course.url.trim().replace(/([?&])_gl=.*$/i, "");
+      }));
+    }
+
+    async function save() {
+      clearStatus($("#save-status"));
+      cleanTrackingLinks();
+      const invalid = data.categories.flatMap((category) => category.courses).find((course) => {
+        try { return new URL(course.url).protocol !== "https:"; } catch (_) { return true; }
+      });
+      if (invalid) {
+        showStatus($("#save-status"), `Le lien du créneau “${invalid.name}” n’est pas une adresse HTTPS valide.`, "error");
+        return;
+      }
+
+      $("#save").disabled = true;
+      $("#floating-save").disabled = true;
+      showStatus($("#save-status"), "Enregistrement en cours…");
+      try {
+        const content = encodeBase64(`${JSON.stringify(data, null, 2)}\n`);
+        const result = await githubRequest(apiUrl(), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "Mise à jour des cours d’essai depuis l’administration",
+            content,
+            sha: currentSha,
+            branch: settings.branch
+          })
+        });
+        currentSha = result.content.sha;
+        dirty = false;
+        $("#floating-save").textContent = "Enregistrer";
+        showStatus($("#save-status"), "Modifications enregistrées. La page publique sera actualisée dans quelques instants.", "ok");
+      } catch (error) {
+        showStatus($("#save-status"), error.message, "error");
+      } finally {
+        $("#save").disabled = false;
+        $("#floating-save").disabled = false;
+      }
+    }
+
+    $("#connect").addEventListener("click", connect);
+    $("#token").addEventListener("keydown", (event) => { if (event.key === "Enter") connect(); });
+    $("#add-category").addEventListener("click", () => {
+      data.categories.push({ id:`categorie-${Date.now()}`, name:"Nouvelle discipline", icon:"⭐", color:"yellow", courses:[] });
+      markDirty(); renderCategories();
+      window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" });
+    });
+    $("#save").addEventListener("click", save);
+    $("#floating-save").addEventListener("click", save);
+    $("#reload").addEventListener("click", async () => {
+      if (dirty && !confirm("Annuler toutes les modifications non enregistrées ?")) return;
+      try { await loadData(); } catch (error) { showStatus($("#save-status"), error.message, "error"); }
+    });
+    $("#logout").addEventListener("click", () => {
+      if (dirty && !confirm("Se déconnecter sans enregistrer les modifications ?")) return;
+      token = ""; data = null; currentSha = ""; dirty = false;
+      $("#token").value = "";
+      $("#editor").hidden = true;
+      $("#login").hidden = false;
+      $("#floating-save").classList.remove("show");
+      clearStatus($("#login-status"));
+    });
+    window.addEventListener("beforeunload", (event) => { if (dirty) { event.preventDefault(); event.returnValue = ""; } });
+
+    loadSavedSettings();
+  </script>
+</body>
+</html>

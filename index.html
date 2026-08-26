@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Choisis ta discipline et réserve ton cours d’essai Fais Ton Show sur HelloAsso.">
+  <meta name="theme-color" content="#17151f">
+  <title>Cours d’essai Fais Ton Show</title>
+  <style>
+    :root { --ink:#17151f; --paper:#fbf7ef; --yellow:#ffd12f; --muted:#716d77; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--ink); color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    a { color:inherit; text-decoration:none; }
+    .shell { position:relative; min-height:100vh; overflow:hidden; background:radial-gradient(circle at 50% -8%,rgba(255,209,47,.24),transparent 28rem),var(--ink); }
+    .shell::before { content:""; position:absolute; top:-9rem; left:50%; width:38rem; height:34rem; transform:translateX(-50%); background:linear-gradient(105deg,transparent 25%,rgba(255,209,47,.08) 49%,transparent 73%); pointer-events:none; }
+    .wrap { position:relative; width:min(100%,760px); margin:auto; padding:0 18px 44px; }
+    .hero { padding:30px 4px; color:white; }
+    .brand { display:inline-flex; align-items:center; gap:9px; margin-bottom:44px; font-size:.79rem; font-weight:900; letter-spacing:.17em; }
+    .brand-star { display:grid; width:28px; height:28px; place-items:center; border-radius:50%; background:var(--yellow); color:var(--ink); font-size:.78rem; }
+    .eyebrow,.kicker { margin:0 0 10px; color:var(--yellow); font-size:.72rem; font-weight:900; letter-spacing:.15em; text-transform:uppercase; }
+    h1 { max-width:650px; margin:0; font-size:clamp(2.65rem,11vw,5rem); font-weight:900; line-height:.91; letter-spacing:-.06em; }
+    h1 span { color:var(--yellow); }
+    .intro { max-width:520px; margin:22px 0 0; color:rgba(255,255,255,.72); line-height:1.55; }
+    .picker { padding:22px 14px 14px; border-radius:28px; background:var(--paper); box-shadow:0 28px 70px rgba(0,0,0,.28); }
+    .heading { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:4px 6px 18px; }
+    .kicker { color:#9a7900; }
+    h2 { margin:0; font-size:clamp(1.35rem,5vw,1.8rem); line-height:1.08; letter-spacing:-.035em; }
+    .total { flex:none; padding:6px 9px; border:1px solid #ddd5c8; border-radius:999px; color:#726b62; font-size:.7rem; font-weight:800; white-space:nowrap; }
+    .list { display:grid; gap:9px; }
+    details { overflow:hidden; border:1px solid #e4ded3; border-radius:18px; background:white; transition:.2s ease; }
+    details:hover { border-color:#cbc2b4; }
+    details[open] { box-shadow:0 10px 26px rgba(38,30,18,.08); }
+    summary { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 17px 11px 13px; list-style:none; cursor:pointer; user-select:none; }
+    summary::-webkit-details-marker { display:none; }
+    summary:focus-visible,.course:focus-visible { outline:3px solid rgba(32,105,255,.3); outline-offset:-3px; }
+    .category-main { display:flex; align-items:center; gap:13px; }
+    .icon { display:grid; width:47px; height:47px; flex:none; place-items:center; border-radius:14px; font-size:1.35rem; background:#eee; }
+    .coral .icon { background:#ffe0d8; } .violet .icon { background:#ece2ff; } .pink .icon { background:#ffe0ed; }
+    .blue .icon { background:#dcecff; } .green .icon { background:#dff2e2; } .yellow .icon { background:#fff0ae; }
+    .category-copy { display:grid; gap:3px; }
+    .category-copy strong { font-size:1rem; line-height:1.2; }
+    .category-copy small { color:var(--muted); font-size:.75rem; }
+    .chevron { width:10px; height:10px; border-right:2px solid #8a838b; border-bottom:2px solid #8a838b; transform:rotate(45deg) translateY(-2px); transition:.2s ease; }
+    details[open] .chevron { transform:rotate(225deg) translate(-2px,-2px); }
+    .courses { display:grid; gap:7px; margin:0 11px 11px; padding-top:10px; border-top:1px solid #eee9e1; }
+    .course { display:flex; min-height:66px; align-items:center; justify-content:space-between; gap:12px; padding:11px 10px 11px 13px; border-radius:13px; background:#f8f5ef; transition:.18s ease; }
+    .course:hover { background:#f1ece3; transform:translateX(2px); }
+    .course-copy { display:grid; gap:5px; }
+    .course-copy strong { font-size:.91rem; }
+    .course-copy span { color:#716b64; font-size:.72rem; line-height:1.35; }
+    .arrow { display:grid; width:34px; height:34px; flex:none; place-items:center; border-radius:50%; background:var(--ink); color:white; font-size:1.1rem; }
+    .error { padding:24px; border-radius:18px; background:white; color:#9d2415; line-height:1.5; }
+    footer { padding:28px 8px 4px; color:white; text-align:center; }
+    footer p { margin:0 0 14px; color:rgba(255,255,255,.52); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; }
+    footer span { color:var(--yellow); font-size:.9rem; font-weight:800; line-height:1.45; }
+    @media (min-width:640px) { .wrap{padding-inline:24px}.hero{padding-top:42px}.picker{padding:28px 22px 20px}summary{padding:13px 19px 13px 15px} }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after{scroll-behavior:auto!important;transition:none!important} }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="wrap">
+      <header class="hero">
+        <div class="brand"><span class="brand-star" aria-hidden="true">★</span><span id="brand">FAIS TON SHOW</span></div>
+        <p class="eyebrow" id="eyebrow"></p>
+        <h1><span id="title"></span><br><span id="title-highlight"></span></h1>
+        <p class="intro" id="intro"></p>
+      </header>
+      <section class="picker" aria-labelledby="picker-title">
+        <div class="heading">
+          <div><p class="kicker">Toutes les disciplines</p><h2 id="picker-title">Quel cours veux-tu essayer ?</h2></div>
+          <span class="total" id="total"></span>
+        </div>
+        <div class="list" id="categories"><p>Chargement…</p></div>
+      </section>
+      <footer><p>Inscription gratuite sur HelloAsso</p><span id="footer"></span></footer>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const text = (tag, className, value) => {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = value;
+      return element;
+    };
+
+    function render(data) {
+      document.getElementById("brand").textContent = data.brand;
+      document.getElementById("eyebrow").textContent = data.eyebrow;
+      document.getElementById("title").textContent = data.title;
+      document.getElementById("title-highlight").textContent = data.titleHighlight;
+      document.getElementById("intro").textContent = data.intro;
+      document.getElementById("footer").textContent = data.footer;
+
+      const courseCount = data.categories.reduce((sum, category) => sum + category.courses.length, 0);
+      document.getElementById("total").textContent = `${courseCount} cours`;
+
+      const list = document.getElementById("categories");
+      list.replaceChildren();
+
+      data.categories.forEach((category) => {
+        const details = document.createElement("details");
+        details.className = category.color || "yellow";
+
+        const summary = document.createElement("summary");
+        const main = document.createElement("span");
+        main.className = "category-main";
+        main.append(text("span", "icon", category.icon || "★"));
+
+        const copy = document.createElement("span");
+        copy.className = "category-copy";
+        copy.append(text("strong", "", category.name));
+        copy.append(text("small", "", `${category.courses.length} créneau${category.courses.length > 1 ? "x" : ""}`));
+        main.append(copy);
+        summary.append(main, text("span", "chevron", ""));
+
+        const courses = document.createElement("div");
+        courses.className = "courses";
+        category.courses.forEach((item) => {
+          const link = document.createElement("a");
+          link.className = "course";
+          link.href = item.url;
+          link.target = "_blank";
+          link.rel = "noopener";
+
+          const courseCopy = document.createElement("span");
+          courseCopy.className = "course-copy";
+          courseCopy.append(text("strong", "", item.name));
+          courseCopy.append(text("span", "", `📅 ${item.detail}`));
+          link.append(courseCopy, text("span", "arrow", "↗"));
+          courses.append(link);
+        });
+
+        details.append(summary, courses);
+        details.addEventListener("toggle", () => {
+          if (!details.open) return;
+          document.querySelectorAll("details[open]").forEach((other) => {
+            if (other !== details) other.open = false;
+          });
+        });
+        list.append(details);
+      });
+    }
+
+    fetch(`./data.json?v=${Date.now()}`, { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Le fichier data.json est introuvable.");
+        return response.json();
+      })
+      .then(render)
+      .catch((error) => {
+        const list = document.getElementById("categories");
+        list.replaceChildren(text("p", "error", `Impossible de charger les cours : ${error.message}`));
+      });
+  </script>
+</body>
+</html>
