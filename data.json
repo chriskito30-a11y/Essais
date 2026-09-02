@@ -128,6 +128,19 @@
           "url": "https://www.helloasso.com/associations/fais-ton-show/evenements/cours-d-essais-magie-mercredi-9-septembre-de-16h30-a-17h30"
         }
       ]
+    },
+    {
+      "id": "categorie-1788336830251",
+      "name": "Cabrières",
+      "icon": "⭐",
+      "color": "yellow",
+      "courses": [
+        {
+          "name": "du CE1 au CM2 au foyer socio culturel",
+          "detail": "Mardi 15 septembre 2026 16h45 - 17h45",
+          "url": "https://www.helloasso.com/associations/fais-ton-show/evenements/cours-d-essais-cabrieres-1"
+        }
+      ]
     }
   ]
 }
