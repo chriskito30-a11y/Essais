@@ -141,6 +141,19 @@
           "url": "https://www.helloasso.com/associations/fais-ton-show/evenements/cours-d-essais-cabrieres-1"
         }
       ]
+    },
+    {
+      "id": "categorie-1788337003967",
+      "name": "St Gervasy",
+      "icon": "⭐",
+      "color": "yellow",
+      "courses": [
+        {
+          "name": "du CE1 au CM2 au foyer socio culturel",
+          "detail": "Jeudi 17 septembre 2026 16h45 - 17h45",
+          "url": "https://www.helloasso.com/associations/fais-ton-show/evenements/cours-d-essais-st-gervasy-1"
+        }
+      ]
     }
   ]
 }
